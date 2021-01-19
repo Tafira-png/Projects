@@ -1,5 +1,12 @@
 <%- include ('../layouts/adminheader') %>
 
+<script>
+    $(document).ready(function () {
+    FilterTable("#search","#content tr")    
+    });
+</script>
+
+
 <h2 class ="page-title"> Products</h2>
 <a href="/admin/products/add-product" class="btn btn-primary">Add a New Product</a>
 <br><br>
