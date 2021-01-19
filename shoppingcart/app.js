@@ -113,5 +113,5 @@ app.use('/', pages);
 
 
 // start server
-var port = 3000;
+var port =  process.env.PORT || 3000;
 app.listen(port, () => console.log("Server listening on port " + port));
