@@ -60,8 +60,18 @@ Product.findOne({slug: savedProduct}, function(err,p){
         
             var GalleryDir = 'public/product_images/' + p._id + '/gallery';
             var ThumbsDir = GalleryDir + "/thumbs"
-            fse.ensureFile(GalleryDir + "/keep.txt");
-            fse.ensureFile(ThumbsDir + "/keep.txt")
+            fse.ensureFile(GalleryDir + "/keep.txt", err => {
+                if(err)
+                console.log(err)
+                else 
+                console.log("success")
+            })
+            fse.ensureFile(ThumbsDir + "/keep.txt", err =>{
+                if(err) 
+                console.log(err)
+                else 
+                console.log("success")
+            })
             fse.readdir(GalleryDir, function (err, files) {
                 if (err) {
                     console.log(err)
