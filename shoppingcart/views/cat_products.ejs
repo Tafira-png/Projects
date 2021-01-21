@@ -1,11 +1,13 @@
 <%- include ('layouts/header') %>
 
+<label for=""> Search </label>
+<input id="search" type="text" name="search">
 
 <div class="row products">
 
     <% products.forEach(function(p){ %>
        
-        <div class="col-xs-12 col-md-4 p">
+        <div class="col-xs-12 col-md-4 p FilterContent">
             <a class="pa" href="/products/<%= p.category %>/<%= p.slug %>">
                 <img class="pimage" src=<% if(p.image ==""){ %>
                     "/images/noimage.jpg"
