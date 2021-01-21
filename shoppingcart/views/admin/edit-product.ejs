@@ -54,7 +54,7 @@
     
     <ul class="gallery">
         <% galleryImages.forEach(function(image){ %>
-        <% if (image !="thumbs") {%>
+        <% if (image !="thumbs" && image !="keep") {%>
             <li>
                 <img src="/product_images/<%= id %>/gallery/thumbs/<%= image %>"" alt="">&nbsp;
                 <a class="confirmDeletion" href="/admin/products/delete-image/<%= image %>?id=<%= id %>"> delete </a>

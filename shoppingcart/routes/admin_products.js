@@ -27,7 +27,8 @@ router.get('/', isAdmin, (req,res) => {
 
     Product.countDocuments(function(err,c) {
         count = c;
-    });
+        console.log(count)
+    })
 
 
     Product.find(function(err, products){
@@ -35,7 +36,8 @@ router.get('/', isAdmin, (req,res) => {
             products: products,
             count:count
         })
-    });
+        
+    })
     
 });
 

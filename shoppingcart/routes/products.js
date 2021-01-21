@@ -11,90 +11,90 @@ const Category = require("../models/category")
 //get all products
 // Limited access modified route example
 // router.get('/', isUser, (req,res) => 
-router.get('/', (req,res) => 
-Product.find((err, products) =>{
-    
-    if(err) console.log(err);
-    res.render('all_products',{
-        title:  'All products',
-        products: products
-    });
-}));
+router.get('/', (req, res) =>
+    Product.find((err, products) => {
 
- //get products by category
-router.get('/:category', (req,res) => {
+        if (err) console.log(err);
+        res.render('all_products', {
+            title: 'All products',
+            products: products
+        });
+    }));
+
+//get products by category
+router.get('/:category', (req, res) => {
 
     categorySlug = req.params.category
     // console.log(categorySlug);
-    Category.findOne({slug: categorySlug}, function(err, c){
-        Product.find({category:categorySlug},(err, products) =>{
-              console.log(c)
-              console.log(err + "1")
-            if(err) {console.log(err);}
-            else
-            { res.render('cat_products',{
-                title: c.title,
-                products: products
-            });
-        }
-          
-           
-        });  
+    Category.findOne({ slug: categorySlug }, function (err, c) {
+        Product.find({ category: categorySlug }, (err, products) => {
+            console.log(c)
+            console.log(err + "1")
+            if (err) { console.log(err); }
+            else {
+                res.render('cat_products', {
+                    title: c.title,
+                    products: products
+                });
+            }
+
+
+        });
     })
- 
+
 });
 
 //get product details
-        
-router.get('/:category/:product', function(req,res) {
+
+router.get('/:category/:product', function (req, res) {
 
     var galleryImages = null
-    var loggedIn = (req.isAuthenticated()) ? true: false;
+    var loggedIn = (req.isAuthenticated()) ? true : false;
     const savedProduct = req.params.product
 
-Product.findOne({slug: savedProduct}, function(err,p){
-           
-        if(err != null){
+    Product.findOne({ slug: savedProduct }, function (err, p) {
+
+        if (err != null) {
             console.log(err)
-        }  
-        
-            var GalleryDir = 'public/product_images/' + p._id + '/gallery';
-            var ThumbsDir = GalleryDir + "/thumbs"
-            fse.ensureFile(GalleryDir + "/keep.txt", err => {
-                if(err)
+        }
+
+        var GalleryDir = 'public/product_images/' + p._id + '/gallery';
+        var ThumbsDir = GalleryDir + "/thumbs"
+        fse.ensureFileSync(GalleryDir + "/keep", err => {
+            if (err)
                 console.log(err)
-                else 
+            else
                 console.log("success")
-            })
-            fse.ensureFile(ThumbsDir + "/keep.txt", err =>{
-                if(err) 
+        })
+        fse.ensureFileSync(ThumbsDir + "/keep", err => {
+            if (err)
                 console.log(err)
-                else 
+            else
                 console.log("success")
-            })
-            fse.readdir(GalleryDir, function (err, files) {
-                if (err) {
-                    console.log(err)
-                } else {
-                    galleryImages = files;
-                    console.log(galleryImages)
+        })
+        fse.readdir(GalleryDir, function (err, files) {
+            if (err) {
+                console.log(err)
+            } else {
+                galleryImages = files;
+                console.log(galleryImages)
 
-                    res.render('product', {
-                        title: p.title,
-                        p: p,
-                        galleryImages: galleryImages,
-                        loggedIn: loggedIn
-                    });
+                res.render('product', {
+                    title: p.title,
+                    p: p,
+                    galleryImages: galleryImages,
+                    loggedIn: loggedIn
+                });
 
-                }
-            });
-        
+            }
+        });
 
- });
- 
+
+    });
+
 });
-        
-   
+
+
 
 
 
