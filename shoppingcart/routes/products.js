@@ -58,21 +58,21 @@ router.get('/:category/:product', function (req, res) {
             console.log(err)
         }
 
-        var GalleryDir = 'public/product_images/' + p._id + '/gallery';
-        var ThumbsDir = GalleryDir + "/thumbs"
-        fse.ensureFileSync(GalleryDir + "/keep", err => {
+        var galleryDir = 'public/product_images/' + p._id + '/gallery';
+        var thumbsDir = galleryDir + "/thumbs"
+        fse.ensureFileSync(galleryDir + "/keep", err => {
             if (err)
                 console.log(err)
             else
                 console.log("success")
         })
-        fse.ensureFileSync(ThumbsDir + "/keep", err => {
+        fse.ensureFileSync(thumbsDir + "/keep", err => {
             if (err)
                 console.log(err)
             else
                 console.log("success")
         })
-        fse.readdir(GalleryDir, function (err, files) {
+        fse.readdir(galleryDir, function (err, files) {
             if (err) {
                 console.log(err)
             } else {
