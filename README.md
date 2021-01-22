@@ -9,6 +9,7 @@ Collection of various web applications used to practice coding.
  6. scraper: Node.js, cheerio based rudimentary web scraper. Selects html data by tag and parses them into JSON, logged in console. Tutorial provided by [Traversy Media](https://www.youtube.com/watch?v=LoziivfAAjE).
  7. shoppingcart: Node.js, express, EJS, mongoose/mongoDB, and passport based project. Simulates a basic ecommerce website in which Admins can add pages, products, and categories. Users can add products to their cart and 'checkout' using paypal sandbox. Tutorial provided by [Easy Learning](https://www.youtube.com/watch?v=gFWfiGRJ_GI). Accessible online via [Heroku](https://morning-caverns-38364.herokuapp.com/).
  Sample user: ID: test, PW: test.
+ Admin user: ID: Admin, PW: password
 
 
 
