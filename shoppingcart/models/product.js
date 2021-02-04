@@ -28,6 +28,21 @@ var ProductSchema = mongoose.Schema({
         type:String,
         
     },
+    imgurId: {
+        type:String,
+    },
+    imgurURL: {
+        type:String
+    },
+    deleteHash: {
+        type:String
+    },
+    AlbumID: {
+        type: String
+    },
+    AlbumHash: {
+        type: String
+    }
 
 });
 

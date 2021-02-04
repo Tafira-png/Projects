@@ -9,16 +9,19 @@ const mkdirp = require('mkdirp');
 var auth = require('../config/auth.js');
 var isAdmin = auth.isAdmin;
 
+
+//imgur custom functions
+var imgur = require("../config/imgur")
+
 //get productmodel/category model
 
 var Product = require("../models/product")
 var Category = require("../models/category");
-const product = require("../models/product");
 
 
-//validator function
 
 
+     
 
 //get products index
 
@@ -27,17 +30,19 @@ router.get('/', isAdmin, (req, res) => {
 
     Product.countDocuments(function (err, c) {
         count = c;
-        console.log(count)
-    })
-
-
-    Product.find(function (err, products) {
-        res.render('admin/products', {
-            products: products,
-            count: count
+        
+    }).then(
+        Product.find(function (err, products) {
+            res.render('admin/products', {
+                products: products,
+                count: count
+            })
+    
         })
+    )
 
-    })
+
+    
 
 });
 
@@ -71,7 +76,8 @@ router.get('/edit-page/:id', isAdmin, (req, res) => {
     Page.findById(req.params.id,
         (err, page) => {
             if (err) return console.log(err);
-            console.log(page._id)
+            
+          
             res.render('admin/edit_page', {
                 title: page.title,
                 slug: page.slug,
@@ -113,18 +119,19 @@ router.post('/add-product',
 
     , (req, res) => {
         imageFile = (req.files != null) ? req.files.image.name : ""
-
+        file  = req.files.image 
         var errors = validationResult(req);
         extractederrors = []
         errors.array().map(err => extractederrors.push(err.msg));
         console.log(extractederrors);
-        console.log(req.body)
-
+        // console.log(req)
+        
         var title = req.body.title;
         var desc = req.body.desc;
         var price = req.body.price;
         var category = req.body.category;
         var slug = title.replace(/\s+/g, "-").toLowerCase();
+        
 
 
         if (extractederrors.length) {
@@ -155,6 +162,7 @@ router.post('/add-product',
                     })
                 }
                 else {
+                   
                     var price2 = parseFloat(price).toFixed(2);
                     var product = new Product({
                         title: title,
@@ -162,22 +170,22 @@ router.post('/add-product',
                         desc: desc,
                         price: price2,
                         category: category,
-                        image: imageFile
-
+                        image: imageFile,
+                        
                     });
                     product.save(err => {
                         if (err) return console.log(err);
-                        // databaseID = product._id
-                        mkdirp.sync('public/product_images/' + product._id);
-                        mkdirp.sync('public/product_images/' + product._id + "/gallery")
-                        mkdirp.sync('public/product_images/' + product._id + "/gallery/thumbs")
+                         databaseID = product._id
+                        mkdirp.sync('public/product_images/' + databaseID);
+                        mkdirp.sync('public/product_images/' + databaseID + "/gallery")
+                        mkdirp.sync('public/product_images/' + databaseID+ "/gallery/thumbs")
+                        
+                        imgur.formDataPrep(imageFile, file, databaseID, false).then(data => {
+                            imgur.uploadImage(data, databaseID)
+                        })
+                        imgur.albumCreatelbumCreate(databaseID);
 
-                        if (imageFile != "") {
-                            var productImage = req.files.image;
-                            var path = 'public/product_images/' + product._id + "/" + imageFile;
-
-                            productImage.mv(path, (err) => console.log(err))
-                        }
+                   
 
                         req.flash('success', 'Product added');
                         res.redirect('/admin/products');
@@ -216,7 +224,7 @@ router.post('/reorder-pages', (req, res) => {
 });
 
 
-// post edit product get
+// get edit product page
 
 
 router.get('/edit-product/:id',
@@ -233,6 +241,9 @@ router.get('/edit-product/:id',
                     console.log(err);
                     res.redirect('/admin/products')
                 } else {
+
+                    var imgurURL = ""
+                    var images = ""
                     var galleryDir = 'public/product_images/' + p._id + '/gallery';
                     var galleryImages = null;
                     var thumbsDir = galleryDir + "/thumbs"
@@ -251,20 +262,46 @@ router.get('/edit-product/:id',
                     fse.readdir(galleryDir, function (err, files) {
                         if (err) {
                             console.log(err)
+                        } else if (p.imgurURL && p.AlbumID) {
+                            imgurURL = p.imgurURL
+                            galleryImages = files;
+                            console.log(galleryImages)
+                            imgur.getAlbumID(req.params.id).then(ID => {
+                                imgur.fetchAlbumImages(ID).then(images => {
+                                    console.log(images)
+                                    res.render('admin/edit-product', {
+                                        id: p._id,
+                                        title: p.title,
+                                        errors: errors,
+                                        desc: p.desc,
+                                        price: p.price,
+                                        categories: categories,
+                                        category: p.category.replace(/\s+/g, "-").toLowerCase(),
+                                        image: p.image,
+                                        galleryImages: galleryImages,
+                                        imgurGallery: images,
+                                        imgurURL: imgurURL
+                                    })
+
+                                })
+                            })
                         } else {
                             galleryImages = files;
+                            res.render('admin/edit-product',
+                                {
+                                    id: p._id,
+                                    title: p.title,
+                                    errors: errors,
+                                    desc: p.desc,
+                                    price: p.price,
+                                    categories: categories,
+                                    category: p.category.replace(/\s+/g, "-").toLowerCase(),
+                                    image: p.image,
+                                    galleryImages: galleryImages,
+                                    imgurURL: imgurURL,
+                                    imgurGallery: images,
 
-                            res.render('admin/edit-product', {
-                                id: p._id,
-                                title: p.title,
-                                errors: errors,
-                                desc: p.desc,
-                                price: p.price,
-                                categories: categories,
-                                category: p.category.replace(/\s+/g, "-").toLowerCase(),
-                                image: p.image,
-                                galleryImages: galleryImages
-                            });
+                                })
                         }
                     })
 
@@ -306,7 +343,7 @@ router.post('/edit-product/:id',
     ],
     (req, res) => {
         imageFile = (req.files != null) ? req.files.image.name : ""
-
+        var file = (req.files != null ) ? req.files.image : ""
         var errors = validationResult(req);
         extractederrors = []
         errors.array().map(err => extractederrors.push(err.msg));
@@ -369,15 +406,22 @@ router.post('/edit-product/:id',
                         p.price = parseFloat(price).toFixed(2);
                         p.category = category;
                         if (imageFile !== "") {
-                            p.image = imageFile;
+                            p.image = imageFile;                           
                         }
                         p.save(function (err) {
                             if (err) console.log(err);
 
                             if (imageFile != "") {
                                 if (pimage != "") {
-                                    fse.remove('public/product_images/' + id + '/' + pimage, function (err) {
+                                    fse.remove('public/product_images/' + id + '/' + pimage, function (err) 
+                                    {
                                         if (err) console.log(err)
+                                        imgur.deleteImage(id);
+                                        imgur.formDataPrep(imageFile,file,id,false).then(data => {
+                                          imgur.uploadImage(data ,id);
+                                        })
+                                       
+                                        
                                     });
                                 }
                                 var productImage = req.files.image;
@@ -398,30 +442,36 @@ router.post('/edit-product/:id',
 
 //post galleryimages
 router.post('/product-gallery/:id', (req, res) => {
-
+    var imageName = req.files.file.name
     var productImage = req.files.file;
     var id = req.params.id;
-    var path = 'public/product_images/' + id + '/gallery/' + req.files.file.name
-    var thumbsPath = 'public/product_images/' + id + '/gallery/thumbs/' + req.files.file.name
-
-    productImage.mv(path, function (err) {
-        if (err) console.log(err)
-
-        resizeImg(fse.readFileSync(path), { width: 100, height: 100 }).then(function (buf) {
-            fse.writeFileSync(thumbsPath, buf);
-        });
-    });
-
-    res.sendStatus(200);
+    var path = 'public/product_images/' + id + '/gallery/' + imageName
+    var thumbsPath = 'public/product_images/' + id + '/gallery/thumbs/' + imageName
+     
+    
+    imgur.getAlbumID(id).then(data2 => {
+        
+        imgur.formDataPrep(imageName, productImage, id, true).then(data1 => {
+            
+           imgur.albumUpload(data1, data2)
+        })
+    })
+    
+    
+    res.sendStatus(200);  
 });
 
 
-//get delete galleryimages
-router.get('/delete-image/:image', isAdmin, (req, res) => {
+//delete galleryimages
+router.get('/delete-image/:image&:p_id', isAdmin, (req, res) => {
+    console.log(req.params)
 
-    var originalImage = 'public/product_images/' + req.query.id + '/gallery/' + req.params.image
-    var thumbImage = 'public/product_images/' + req.query.id + '/gallery/thumbs' + req.params.image
+    var originalImage = 'public/product_images/' + req.query.id + '/gallery/' + req.params.p_id
+    var thumbImage = 'public/product_images/' + req.query.id + '/gallery/thumbs' + req.params.p_id
 
+
+    imgur.deleteGalleryImage(req.params.image)
+   
     fse.remove(originalImage, (err) => {
         if (err) { console.log(err) }
         else {
@@ -431,7 +481,7 @@ router.get('/delete-image/:image', isAdmin, (req, res) => {
                 }
                 else {
                     req.flash('success', 'Image deleted');
-                    res.redirect('/admin/products/edit-product/' + req.query.id);
+                    res.redirect('/admin/products/edit-product/' + req.params.p_id);
                 }
             });
         }
@@ -452,7 +502,9 @@ router.get('/delete-product/:id', isAdmin, (req, res) => {
             console.log(err)
         }
         else {
-            Product.findByIdAndRemove(id, (err) => console.log(err))
+            imgur.deleteImage(id);
+            imgur.deleteAlbum(id);
+            Product.findByIdAndRemove(id, (err) => console.log(err));
             req.flash('success', 'Product deleted');
             res.redirect('/admin/products/');
         };

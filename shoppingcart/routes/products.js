@@ -4,9 +4,11 @@ var fse = require("fs-extra");
 var auth = require('../config/auth.js');
 var isUser = auth.isUser;
 
-
+const imgur = require ("../config/imgur")
 const Product = require("../models/product")
 const Category = require("../models/category")
+
+
 
 //get all products
 // Limited access modified route example
@@ -51,7 +53,8 @@ router.get('/:category/:product', function (req, res) {
     var galleryImages = null
     var loggedIn = (req.isAuthenticated()) ? true : false;
     const savedProduct = req.params.product
-
+    var images = ""
+    var imgurURL = ""
     Product.findOne({ slug: savedProduct }, function (err, p) {
 
         if (err != null) {
@@ -75,17 +78,37 @@ router.get('/:category/:product', function (req, res) {
         fse.readdir(galleryDir, function (err, files) {
             if (err) {
                 console.log(err)
-            } else {
+            } else if (p.imgurURL && p.AlbumID) {
+                imgurURL = p.imgurURL
                 galleryImages = files;
                 console.log(galleryImages)
+                imgur.getAlbumID(p._id).then(ID => {
+                    imgur.fetchAlbumImages(ID).then(images => {
 
+                        console.log(images)
+                        res.render('product', {
+                            title: p.title,
+                            p: p,
+                            galleryImages: galleryImages,
+                            loggedIn: loggedIn,
+                            imgurGallery: images,
+                            imgurURL: imgurURL
+                        })
+
+                    })
+                })
+               
+
+            } else {
+                galleryImages = files;
                 res.render('product', {
                     title: p.title,
                     p: p,
                     galleryImages: galleryImages,
-                    loggedIn: loggedIn
+                    loggedIn: loggedIn,
+                    imgurGallery: images,
+                    imgurURL: imgurURL
                 });
-
             }
         });
 

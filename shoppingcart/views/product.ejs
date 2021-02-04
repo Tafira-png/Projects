@@ -6,11 +6,13 @@
     
    
     <div class="col-xs-12 col-md-5">
-        <img class="spi" src= <% if(p.image ==""){ %>
-            "/images/noimage.jpg"
-        <% } else { %>
+        <img class="spi" src= <% if(p.image !=="" && !imgurURL ) {%>
             "/product_images/<%= p.id %>/<%= p.image %>"
-        <% } %> >
+        <% } else if(imgurURL) { %> 
+            "<%= imgurURL %>"
+        <% } else { %>
+            "/images/noimage.jpg" 
+        <% }  %> >
         <br>
     </div>
     <div class="col-xs-12 col-md-7">
@@ -28,18 +30,40 @@
     </div>
     <div class="col-xs-12">
         <ul class="gallery">
-            <% galleryImages.forEach(function(image){ %>
-               <% if( image !="keep" && image !="thumbs") { %>
+            <% if(!imgurGallery) { %>
+                <% galleryImages.forEach(function(image){ %>
+                    <% if (image !="thumbs" && image !="keep" ) {%>
                     <li>
                         <a data-fancybox="gallery" href="/product_images/<%= p.id %>/gallery/<%= image %>">
                             <img src="/product_images/<%= p.id %>/gallery/thumbs/<%= image %>">
                         </a>
                     </li>
-              <% } %>
-
-            <% }) %>
+                    <% } %>
+                    <% }) %>
+                        <% } else if(imgurGallery) { %>
+                            <% for( var i in imgurGallery) { %>
+                                <li>
+                                    <a data-fancybox="gallery" href="<%= imgurGallery[i].link %>">
+                                        <img src=" <% switch(imgurGallery[i].type) {
+                                            case 'image/jpeg': %>
+                                            https://i.imgur.com/<%= imgurGallery[i].id %>t.jpeg 
+                                            <% break; 
+                                            case 'image/png': %>
+                                            https://i.imgur.com/<%= imgurGallery[i].id %>t.png 
+                                            <% break;
+                                            case 'image/gif': %>
+                                            https://i.imgur.com/<%= imgurGallery[i].id %>t.gif
+                                            <% break;
+                                            default: %>
+                                            https://i.imgur.com/<%= imgurGallery[i].id %>t.jpg
+                                        <% } %> ">
+                                    <% } %>
+                                    <% } else {%>
+                                        <br>
+                                    <% } %>
+                                    </a>
+                                </li>
         </ul>
-
     </div>
 
 </div>

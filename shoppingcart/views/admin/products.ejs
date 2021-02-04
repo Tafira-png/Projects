@@ -13,7 +13,7 @@
 
 
 
-<% if(count && count > 0) { %>
+<% if(products) { %>
 <label for=""> Search </label>
 <input id="search" type="text" name="search">
 
@@ -35,9 +35,11 @@
                 <td><%= product.title %></td>
                 <td><%= product.category %></td>
                 <td>$<%= parseFloat(product.price).toFixed(2) %></td>
-                <td> <% if (product.image =="") { %>
+                <td> <% if (product.image =="" && product.imgurURL =="") { %>
                     <img id="noImg" src="/images/noimage.jpg">
-                    <% } else { %>
+                    <% } else if (product.imgurURL && product.imgurURL !=="") { %>
+                     <img id="noImg"src="<%= product.imgurURL%>">   
+                     <%} else { %>
                      <img id="noImg"src="/product_images/<%= product._id%>/<%= product.image%>">
                   <% } %>
                 

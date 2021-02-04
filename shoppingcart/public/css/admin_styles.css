@@ -8,8 +8,17 @@
 
 #imgPreview {
     margin: 20px;
+    
 }
-
+.imgPreview {
+    margin: 20px;
+    width:100%;
+    height:100%;
+    
+}
+.confirmDeletion{
+    text-align:center
+}
 #noImg {
     width: 100px;
     height: 100px;
