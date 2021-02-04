@@ -183,7 +183,7 @@ router.post('/add-product',
                         imgur.formDataPrep(imageFile, file, databaseID, false).then(data => {
                             imgur.uploadImage(data, databaseID)
                         })
-                        imgur.albumCreatelbumCreate(databaseID);
+                        imgur.albumCreate(databaseID);
 
                    
 
