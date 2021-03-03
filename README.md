@@ -10,6 +10,8 @@ Collection of various web applications used to practice coding.
  7. shoppingcart: Node.js, express, EJS, mongoose/mongoDB, and passport based project. Simulates a basic ecommerce website in which Admins can add pages, products, and categories. Users can add products to their cart and 'checkout' using paypal sandbox. Tutorial provided by [Easy Learning](https://www.youtube.com/watch?v=gFWfiGRJ_GI). Accessible online via [Heroku](https://morning-caverns-38364.herokuapp.com/).  
  Sample user: ID: test, PW: test.  
  Admin user: ID: Admin, PW: password
+ 8. angularCart/Organic-shopping-cart : Node.js, Angular.js and Google Firebase based project. A basic e-commerce website that utilizes Google Auth, Firebase's real-time database, and Angular to provide real-time data updates without postback. Based off of [Mosh Hamedani's Angular 4 Course](https://codewithmosh.com/p/angular-master-class). 
+ Hosted via [Firebase](https://shopping-cart-8a210.web.app/).
 
 
 

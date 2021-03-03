@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "shopping-cart-8a210": {
+      "hosting": {
+        "organic-shopping-project": [
+          "shopping-cart-8a210"
+        ]
+      }
+    }
+  }
+}
