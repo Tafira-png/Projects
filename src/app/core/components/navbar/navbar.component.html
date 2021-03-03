@@ -1,0 +1,47 @@
+
+<nav class="navbar navbar-expand-md  sticky-top navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand" routerLink="/"> 
+        <fa-icon [icon]="faLeaf"></fa-icon> 
+      </a>
+      <button class="navbar-toggler" type="button" aria-controls="navbarContent" [attr.aria-expanded]="!collapsed" aria-label="Toggle navigation" (click)="collapsed = !collapsed">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    
+      <div class="navbar-collapse" display="dynamic" [class.collapse]="   collapsed" id="navbarContent">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/cart"> 
+               
+                <span class="badge badge-warning badge-pill" *ngIf="cart$ | async as cart"> 
+                  {{cart.totalItemsCount}} </span>
+                 <fa-icon [icon]="faShoppingCart">
+                </fa-icon>
+                   </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/product-list"> Product List </a>
+            </li>
+            <ng-template #anomymousUser>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/login"> Login </a>
+            </li> 
+          </ng-template>
+          <li class="nav-item dropdown" ngbDropdown *ngIf="appUser; else anomymousUser">
+              <a class="nav-link" tabindex="0" ngbDropdownToggle id="navbarDropdown1"> {{appUser.name}}</a>
+              <div ngbDropdownMenu aria-labelledby="navbarDropdown1" class="dropdown-menu  dropdown-menu-right">
+              <a ngbDropdownItem  routerLink="/my/orders" (click)="$event.preventDefault()"> My Orders</a>
+              <ng-container *ngIf="appUser.isAdmin">
+                <a ngbDropdownItem  routerLink="/admin/orders" (click)="$event.preventDefault()"> Manage Orders</a>
+                <a ngbDropdownItem  routerLink="/admin/products" (click)="$event.preventDefault()"> Manage Products</a>
+              </ng-container>
+              <a ngbDropdownItem (click)="logout()">Log Out</a>
+          </div>
+          </li>
+        </ul>
+    
+      </div>
+    </div>
+ 
+  
+  </nav>
